@@ -1,0 +1,37 @@
+.todo-app {
+  text-align: center;
+  margin: auto;
+}
+
+.list-task {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.item-task {
+  width: 250px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.completed {
+  text-decoration: line-through;
+}
+
+.no-task {
+  margin-top: 40px;
+  font-weight: bold;
+  color: green;
+}
+
+.over-task {
+  color: red;
+}
+
+.btn-delete {
+  color: white;
+  background: red;
+  outline: none;
+  border: none;
+}
