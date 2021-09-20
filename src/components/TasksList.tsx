@@ -1,82 +1,86 @@
-import React, { useEffect, useState } from "react";
-import { task } from "../constants/arrTasks";
+import React, {
+  Dispatch,
+  FormEvent,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
+import { Task } from "../constants/tasks";
 
-type Props = {
-  tasks: task[];
-  setTasks: React.Dispatch<React.SetStateAction<task[]>>;
-};
+type AppProps = { tasks: Task[]; setTasks: Dispatch<SetStateAction<Task[]>> };
 
-const TasksList = ({ tasks, setTasks }: Props) => {
-  const [currentEdit, setCurrentEdit] = useState<number>(-1);
-  const [nameEdit, setNameEdit] = useState<string>();
+export const TasksList = ({ tasks, setTasks }: AppProps) => {
+  const [currentEdit, setCurrentEdit] = useState<Task | null>(null);
+  const [nameEdit, setNameEdit] = useState<string>("");
 
   useEffect(() => {
-    if (currentEdit >= 0) {
-      setNameEdit(tasks[currentEdit].name);
+    if (currentEdit) {
+      setNameEdit(currentEdit.name);
     }
-  }, [currentEdit, tasks]);
+  }, [currentEdit]);
 
-  const deleteTask = (index: number) => {
-    tasks.splice(index, 1);
+  const toggleCompleted = (task: Task) => {
+    task.completed = !task.completed;
     setTasks([...tasks]);
   };
 
-  const toggleCompleted = (index: number) => {
-    tasks[index].completed = !tasks[index].completed;
+  const deleteTask = (task: Task) => {
+    const taskIndex = tasks.indexOf(task);
+    tasks.splice(taskIndex, 1);
 
     setTasks([...tasks]);
   };
 
-  const saveTask = () => {
-    tasks[currentEdit].name = nameEdit;
-    setTasks([...tasks]);
-    setCurrentEdit(-1);
+  const handleEdit = (task: Task) => {
+    if (currentEdit) {
+      currentEdit.name = nameEdit;
+      setTasks([...tasks]);
+    }
+    setCurrentEdit(task);
+  };
+
+  const saveTask = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (currentEdit) {
+      currentEdit.name = nameEdit;
+      setTasks([...tasks]);
+      setCurrentEdit(null);
+    }
   };
 
   return (
-    <div className="list-task">
+    <>
+      {tasks.length >= 5 && (
+        <p style={{ color: "red" }}>Bạn đang có {tasks.length} công việc</p>
+      )}
+
       {!tasks.length && (
-        <div className="no-task">Bạn không có công việc nào</div>
+        <p style={{ color: "green" }}>Bạn không có công việc nào</p>
       )}
+      {tasks.map((task) => (
+        <p key={task.id}>
+          <input
+            type="checkbox"
+            checked={task.completed}
+            onChange={() => toggleCompleted(task)}
+          />
 
-      {tasks.length >= 8 && (
-        <div className="over-task">Bạn đang có {tasks.length} công việc!</div>
-      )}
+          {task === currentEdit ? (
+            <form onSubmit={(e) => saveTask(e)}>
+              <input
+                type="text"
+                value={nameEdit}
+                onChange={(e) => setNameEdit(e.target.value)}
+              />
+              <button onClick={() => saveTask}>save</button>
+            </form>
+          ) : (
+            <label onClick={() => handleEdit(task)}>{task.name}</label>
+          )}
 
-      {tasks.map((task, index) => (
-        <p key={index} className="item-task">
-          <span>
-            <input
-              type="checkbox"
-              checked={task.completed}
-              onChange={() => toggleCompleted(index)}
-            />
-
-            {index === currentEdit ? (
-              <>
-                <input
-                  type="text"
-                  value={nameEdit}
-                  onChange={(e) => setNameEdit(e.target.value)}
-                />
-                <button onClick={saveTask}>save</button>
-              </>
-            ) : (
-              <label
-                className={task.completed ? "completed" : ""}
-                onClick={() => setCurrentEdit(index)}
-              >
-                {task.name}
-              </label>
-            )}
-          </span>
-          <button className="btn-delete" onClick={() => deleteTask(index)}>
-            X
-          </button>
+          <button onClick={() => deleteTask(task)}>x</button>
         </p>
       ))}
-    </div>
+    </>
   );
 };
-
-export default TasksList;

@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import FormInsert from "./components/FormInsert";
-import TasksList from "./components/TasksList";
-import Title from "./components/Title";
-import { arrTasks, task } from "./constants/arrTasks";
 import "./App.css";
+import { Insert } from "./components/Insert";
+import { TasksList } from "./components/TasksList";
+import { Title } from "./components/Title";
+import { initialTasks, Task } from "./constants/tasks";
 
 const App = () => {
-  const [tasks, setTasks] = useState<task[]>(arrTasks);
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
   return (
     <div className="todo-app">
       <Title />
-      <FormInsert setData={setTasks} tasks={tasks} />
+      <Insert tasks={tasks} setTasks={setTasks} />
       <TasksList tasks={tasks} setTasks={setTasks} />
     </div>
   );

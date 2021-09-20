@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { task } from "../constants/arrTasks";
+import { v4 } from "uuid";
+import { Task } from "../constants/arrTasks";
 
 type Props = {
-  setData: React.Dispatch<React.SetStateAction<task[]>>;
-  tasks: task[];
+  setData: React.Dispatch<React.SetStateAction<Task[]>>;
+  tasks: Task[];
 };
 
-const FormInsert = ({ setData, tasks }: Props) => {
+export const FormInsert = ({ setData, tasks }: Props) => {
   const [name, setName] = useState<string>("");
 
   const add = (e: React.FormEvent<HTMLFormElement>) => {
@@ -16,9 +17,15 @@ const FormInsert = ({ setData, tasks }: Props) => {
       return;
     }
 
+    if (tasks.some((task) => task.name?.toLowerCase() === name.toLowerCase())) {
+      alert("Task đã tồn tại");
+      return;
+    }
+
     const newTask = {
       name: name,
       completed: false,
+      id: v4(),
     };
 
     tasks.unshift(newTask);
@@ -37,5 +44,3 @@ const FormInsert = ({ setData, tasks }: Props) => {
     </form>
   );
 };
-
-export default FormInsert;
